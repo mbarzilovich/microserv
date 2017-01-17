@@ -16,6 +16,7 @@ up)
   
   go get github.com/gorilla/websocket
   go get github.com/go-stomp/stomp
+  set -e
   pushd src/github.com/mbarzilovich/receiver_app
   CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo .
   popd
@@ -26,6 +27,7 @@ up)
   popd
   cp src/github.com/mbarzilovich/talkative_app/talkative_app talkative_app/
   docker-compose -f compose.yml up -d --build
+  set +e
 ;;
 down)
   docker-compose -f compose.yml stop

@@ -11,19 +11,19 @@ import (
 
 func send_message(text string) {
 
-    log.Println("Start connecting to brocker")
-    conn, err := stomp.Dial("tcp", "brocker:61613")
+    log.Println("Start connecting to broker")
+    conn, err := stomp.Dial("tcp", "broker:61613")
     if err != nil {
         println("cannot connect to server", err.Error())
         return
     }
-    log.Println("Connected to brocker")
+    log.Println("Connected to broker")
     err = conn.Send("/queue/SampleQueue", "text/plain", []byte(text))
     if err != nil {
         println("failed to send to server", err)
         return
     }
-    log.Println("Message sent to brocker")
+    log.Println("Message sent to broker")
     conn.Disconnect()
   
 }

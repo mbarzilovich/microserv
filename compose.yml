@@ -1,6 +1,6 @@
 version: '2'
 services:
-  brocker:
+  broker:
     image: webcenter/activemq:5.14.2
     ports:
       - "8161:8161"
@@ -23,11 +23,9 @@ services:
     image: nginx:alpine
     volumes: 
       - ./talkative_nginx.conf:/etc/nginx/conf.d/default.conf:ro
-
     ports:
       - "8091:80"
 
-  
   receiver_app:
     build: receiver_app
     ports:

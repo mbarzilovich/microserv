@@ -7,21 +7,29 @@ import (
     "github.com/go-stomp/stomp"
     "github.com/gorilla/websocket"
     "text/template"
-//    "sort"
+    "time"
 )
-
+const maxConnectTry = 20
 var currentMessage = "Message will be here"
 var homeTempl = template.Must(template.New("").Parse(homeHTML))
 var messageChan = make(chan []byte)
 var upgrader  = websocket.Upgrader{}
 
 func receiveMessage(subscribed chan bool) {
-    conn, err := stomp.Dial("tcp", "brocker:61613")
-    if err != nil {
-        println("cannot connect to server", err.Error())
-        return
+    var conn *stomp.Conn
+    var err error
+    for i := 0; ; i++  {
+        conn, err = stomp.Dial("tcp", "broker:61613")
+        if err != nil {
+            time.Sleep(1 * time.Second)
+            log.Println("retrying... ", i)
+        } else { break }
+        if i >= (maxConnectTry - 1) {
+            log.Println("Failed to connect to server after ", i , " attempts. Error ", err)
+            return
+        }
     }
-    log.Println("Connected to brocker")
+    log.Println("Connected to broker")
     sub, err := conn.Subscribe("/queue/SampleQueue", stomp.AckAuto)
     if err != nil {
         println("failed to subscribe to queue", err)
@@ -49,15 +57,6 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
     
-    /*trueHost := r.Header().Get("X-Forwarded-For")
-    var keys []string
-    for k := range r.Header {
-        keys = append(keys, k)
-    }
-    sort.Strings(keys)
-    for _, k := range keys {
-           log.Println(k, ":", r.Header[k])
-    } */
     var v = struct {
 		Host    string
 		Data    string
