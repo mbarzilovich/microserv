@@ -7,11 +7,11 @@ Test task for LZD
 3. GoLang version go1.7.4
 
 #### Port mapping
-Entry point for sending POST requests is listening on local port 4431 (HTTPS schema)
-Bare receiver application is listening on local port 8082
-Message broker admin UI avalilable on local port 8161 (Username: `admin`, password: `admin`)
-Bare talkative applications is  available on local port 8092
-Web server proxy for talkative application listens on local port 8091
+* Entry point for sending POST requests is listening on local port 4431 (HTTPS schema)
+* Bare receiver application is listening on local port 8082
+* Message broker admin UI avalilable on local port 8161 (Username: `admin`, password: `admin`)
+* Bare talkative applications is  available on local port 8092
+* Web server proxy for talkative application listens on local port 8091
 
 #### Usage
 * Use `microserv` wrapper to start/stop project
