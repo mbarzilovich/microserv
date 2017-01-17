@@ -1,0 +1,39 @@
+#!/bin/bash
+SCRIPT_DIR=$(readlink -f `dirname $0`)
+
+usage() {
+  echo -e "Microserv wraper script usage: microserv <action> \n \
+  Available actions are:\n \
+  up - run this to rebuild and start all services\n \
+  down - run this to stop services"
+  exit $1
+}
+
+case $1 in
+up) 
+  export GOPATH=$SCRIPT_DIR
+  echo GOPATH=$GOPATH
+  
+  go get github.com/gorilla/websocket
+  go get github.com/go-stomp/stomp
+  pushd src/github.com/mbarzilovich/receiver_app
+  CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo .
+  popd
+  cp src/github.com/mbarzilovich/receiver_app/receiver_app receiver_app/
+  
+  pushd src/github.com/mbarzilovich/talkative_app
+  CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo .
+  popd
+  cp src/github.com/mbarzilovich/talkative_app/talkative_app talkative_app/
+  docker-compose -f compose.yml up -d --build
+;;
+down)
+  docker-compose -f compose.yml stop
+  docker-compose -f compose.yml rm -f
+  # Clean applications
+  rm -f src/github.com/mbarzilovich/receiver_app/receiver_app receiver_app/receiver_app src/github.com/mbarzilovich/talkative_app/talkative_app talkative_app/talkative_app
+;;
+*)
+  usage 1
+;;
+esac
